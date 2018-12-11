@@ -1,0 +1,6 @@
+# texteditor files
+*.tmp
+*~
+
+# test files
+*.test

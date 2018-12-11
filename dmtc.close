@@ -1,0 +1,26 @@
+#!/bin/bash 
+
+# dmtc - dm-crypt-based replacement for truecrypt encrypted container
+
+# dmtc.close - Closes an existing container file.
+
+# how to use:
+#
+#     dmtc.close <mountpoint>
+#
+# arguments:
+# mountpoint - mount point of device
+
+set -xe
+
+MOUNTPOINT="$1"
+
+sudo umount /media/dmtc_secret
+sudo rmdir /media/dmtc_secret
+
+# try to find the loopback device from cryptsetup status
+# print status, get correct like, split line, then use xargs to trip whitespace.
+LODEV=$(sudo cryptsetup status dmtc_secret | grep "device" | cut -d: -f2 | xargs)
+
+sudo cryptsetup close dmtc_secret
+sudo losetup -d $LODEV

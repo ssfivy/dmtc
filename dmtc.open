@@ -1,0 +1,49 @@
+#!/bin/bash 
+
+# dmtc - dm-crypt-based replacement for truecrypt encrypted container
+
+# dmtc.open - Opens an existing container file.
+
+# how to use:
+#
+#     dmtc.open <filename>
+#
+# arguments:
+# filename - filename to create. Can be relative or absolute path.
+# 
+# This script will prompt you for password
+
+set -xe
+
+FILENAME="$1"
+
+# Determine loop device to use
+LODEV=$(losetup -f)
+echo "Using loop device $LODEV"
+
+# mount file as loop device, set up exit trap
+finish1 () {
+sudo losetup -d "$LODEV"
+}
+sudo losetup "$LODEV" "$FILENAME"
+trap finish1 EXIT
+
+# unlock the "partition"
+finish2 () {
+sudo cryptsetup close dmtc_secret
+finish1
+}
+sudo cryptsetup open "$LODEV" dmtc_secret
+trap finish2 EXIT
+
+# create fs mount point
+finish3 () {
+sudo rmdir /media/dmtc_secret
+finish2
+}
+sudo mkdir -p /media/dmtc_secret
+trap finish3 EXIT
+
+# mount the newly created OS
+sudo mount /dev/mapper/dmtc_secret /media/dmtc_secret
+trap - EXIT

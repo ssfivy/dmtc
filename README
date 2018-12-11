@@ -1,0 +1,8 @@
+
+# dmtc
+
+basic dm-crypt-based replacement for truecrypt encrypted container.
+
+Intended to be specific use and dead simple to verify at a glance.
+
+See `https://github.com/dyne/Tomb` if you want a full-featured implementation
